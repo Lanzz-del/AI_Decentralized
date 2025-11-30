@@ -3,145 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Gemma Chatbot (Client-Side)</title>
+    <title>AI Decentralized - Private Chatbot</title>
     <link rel="stylesheet" href="styles.css">
-
+    
     <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.2"></script>
 </head>
 <body>
     <div class="chat-container">
-        <h1>Private Gemma Chatbot 🔒</h1>
-        <p class="subtitle">100% On-Device Inference. Data Anda Aman.</p>
+        <header class="chat-header">
+            <h1>AI Decentralized 🔒</h1>
+            <p class="subtitle">Client-Side LLM: 100% On-Device Inference. Data Anda Aman.</p>
+            <button id="clear-chat-button" title="Bersihkan Riwayat Obrolan">🗑️</button>
+        </header>
 
         <div id="chat-history" class="chat-history">
             <div class="message bot-message">
-                <p>Halo! Saya adalah chatbot pribadi Gemma yang berjalan sepenuhnya di browser Anda. Tidak ada data obrolan yang dikirim ke server manapun.</p>
+                <p>Halo! Saya adalah chatbot AI privat Anda. Semua percakapan diproses di perangkat Anda dan tidak dikirim ke server manapun.</p>
             </div>
         </div>
 
-        <div class="chat-input">
-            <input type="text" id="user-input" placeholder="Ketik pesan Anda...">
-            <button id="send-button" disabled>Kirim</button>
+        <div id="status-area" class="status-area">
+            <div id="progress-bar-container" class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="status-message" class="status-message">
+                Memulai inisialisasi model...
+            </div>
         </div>
 
-        <div id="status-message" class="status-message">
-            Memuat model Gemma 2B yang ringan... Mohon tunggu.
+        <div class="chat-input-area">
+            <textarea id="user-input" placeholder="Ketik pesan Anda..." rows="1"></textarea>
+            <button id="send-button" disabled title="Kirim Pesan">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
         </div>
     </div>
 
-    <script>
-        // === LOGIKA JAVASCRIPT: GEMMA 2B INFRENCE LOKAL ===
-
-        // *** MODEL LEBIH KECIL DAN STABIL UNTUK PERANGKAT SELULER ***
-        const modelName = 'Xenova/gemma-2b-it'; 
-        let pipe = null;
-
-        const chatHistory = document.getElementById('chat-history');
-        const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
-        const statusMessage = document.getElementById('status-message');
-
-        // Fungsi untuk menambahkan pesan ke tampilan
-        function addMessage(sender, text) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            messageDiv.innerHTML = `<p>${text}</p>`;
-            chatHistory.appendChild(messageDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-
-        // 1. INISIALISASI MODEL DENGAN transformers.js
-        async function initializeModel() {
-            try {
-                statusMessage.textContent = 'Mengunduh model LLM Gemma 2B yang ringan (ini hanya sekali)...';
-                pipe = await self.transformers.pipeline(
-                    'text-generation', 
-                    modelName, 
-                    { 
-                        revision: 'main'
-                    }
-                );
-                
-                statusMessage.textContent = 'Model Gemma siap! Chat dimulai.';
-                sendButton.disabled = false;
-                sendButton.textContent = 'Kirim';
-                userInput.focus();
-            } catch (error) {
-                console.error('Gagal memuat model. Error terperinci:', error);
-                statusMessage.textContent = 'Error fatal: Gagal memuat model. Periksa konsol dan koneksi internet.';
-            }
-        }
-
-        // 2. FUNGSI INFERENSI (TIDAK ADA FETCH API KE SERVER)
-        async function runInference(prompt) {
-            if (!pipe) return "Model belum siap.";
-
-            sendButton.disabled = true;
-            sendButton.textContent = 'AI Berpikir...';
-            
-            // Proses inferensi berjalan murni di perangkat pengguna!
-            const output = await pipe(prompt, {
-                max_new_tokens: 100, // Menambah token agar jawaban lebih panjang
-                temperature: 0.6,
-                do_sample: true,
-                // Menggunakan template chat khusus Gemma untuk hasil yang lebih baik
-                template: `<start_of_turn>user\n${prompt}<end_of_turn>\n<start_of_turn>model\n`
-            });
-
-            sendButton.disabled = false;
-            sendButton.textContent = 'Kirim';
-            
-            // Ambil teks yang dihasilkan
-            const generatedText = output[0].generated_text.trim();
-            
-            // Mencari dan mengambil hanya bagian respons model
-            const modelResponseTag = '<start_of_turn>model';
-            const cleanResponse = generatedText.substring(generatedText.lastIndexOf(modelResponseTag) + modelResponseTag.length).trim();
-            
-            return cleanResponse;
-        }
-
-        // 3. HANDLER PENGIRIMAN PESAN
-        async function sendMessage() {
-            const userText = userInput.value.trim();
-            if (!userText || sendButton.disabled) return;
-
-            // 1. Tampilkan pesan pengguna
-            addMessage('user', userText);
-            userInput.value = '';
-
-            // 2. Dapatkan respons dari model lokal
-            const botResponse = await runInference(userText);
-
-            // 3. Tampilkan pesan AI
-            addMessage('bot', botResponse);
-            
-            // Simpan ke LocalStorage
-            saveHistory();
-        }
-
-        // 4. HANDLER LOCAL STORAGE
-        function saveHistory() {
-             localStorage.setItem('chatHistory', chatHistory.innerHTML);
-        }
-
-        function loadHistory() {
-             const savedHistory = localStorage.getItem('chatHistory');
-             if (savedHistory) {
-                chatHistory.innerHTML = savedHistory;
-             }
-        }
-
-        // === EVENT LISTENERS & INI ===
-        sendButton.addEventListener('click', sendMessage);
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        loadHistory(); // Muat riwayat saat aplikasi dibuka
-        initializeModel(); // Mulai memuat model
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
+
