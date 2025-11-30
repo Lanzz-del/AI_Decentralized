@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Phi-4-mini Chatbot (Client-Side)</title>
+    <title>Private Gemma Chatbot (Client-Side)</title>
     <link rel="stylesheet" href="styles.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.2"></script>
 </head>
 <body>
     <div class="chat-container">
-        <h1>Private Phi Chatbot 🔒</h1>
+        <h1>Private Gemma Chatbot 🔒</h1>
         <p class="subtitle">100% On-Device Inference. Data Anda Aman.</p>
 
         <div id="chat-history" class="chat-history">
             <div class="message bot-message">
-                <p>Halo! Saya adalah chatbot pribadi yang berjalan di browser Anda (client-side). Tidak ada data obrolan yang dikirim ke server manapun.</p>
+                <p>Halo! Saya adalah chatbot pribadi Gemma yang berjalan sepenuhnya di browser Anda. Tidak ada data obrolan yang dikirim ke server manapun.</p>
             </div>
         </div>
 
@@ -25,14 +25,15 @@
         </div>
 
         <div id="status-message" class="status-message">
-            Memuat model... Tunggu sebentar.
+            Memuat model Gemma 2B yang ringan... Mohon tunggu.
         </div>
     </div>
 
     <script>
-        // === LOGIKA JAVASCRIPT: PRIVASI & INFERENSI LOKAL ===
+        // === LOGIKA JAVASCRIPT: GEMMA 2B INFRENCE LOKAL ===
 
-        const modelName = 'Xenova/phi-2'; // Placeholder untuk Phi-4-mini compatible
+        // *** MODEL LEBIH KECIL DAN STABIL UNTUK PERANGKAT SELULER ***
+        const modelName = 'Xenova/gemma-2b-it'; 
         let pipe = null;
 
         const chatHistory = document.getElementById('chat-history');
@@ -46,30 +47,28 @@
             messageDiv.className = `message ${sender}-message`;
             messageDiv.innerHTML = `<p>${text}</p>`;
             chatHistory.appendChild(messageDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll
+            chatHistory.scrollTop = chatHistory.scrollHeight;
         }
 
         // 1. INISIALISASI MODEL DENGAN transformers.js
         async function initializeModel() {
             try {
-                // Hati-hati: Pemanggilan 'pipeline' ini akan mendownload bobot model (weights)
-                // secara langsung ke browser pengguna. Ini hanya terjadi sekali.
-                statusMessage.textContent = 'Mengunduh model LLM ringan (±200MB)...';
+                statusMessage.textContent = 'Mengunduh model LLM Gemma 2B yang ringan (ini hanya sekali)...';
                 pipe = await self.transformers.pipeline(
                     'text-generation', 
                     modelName, 
                     { 
-                        // Konfigurasi ini memastikan model berjalan lokal
                         revision: 'main'
                     }
                 );
                 
-                statusMessage.textContent = 'Model siap! Chat dimulai.';
+                statusMessage.textContent = 'Model Gemma siap! Chat dimulai.';
                 sendButton.disabled = false;
                 sendButton.textContent = 'Kirim';
+                userInput.focus();
             } catch (error) {
-                console.error('Gagal memuat model:', error);
-                statusMessage.textContent = 'Error: Gagal memuat model. Periksa koneksi atau konsol.';
+                console.error('Gagal memuat model. Error terperinci:', error);
+                statusMessage.textContent = 'Error fatal: Gagal memuat model. Periksa konsol dan koneksi internet.';
             }
         }
 
@@ -82,9 +81,11 @@
             
             // Proses inferensi berjalan murni di perangkat pengguna!
             const output = await pipe(prompt, {
-                max_new_tokens: 50,
-                temperature: 0.7,
+                max_new_tokens: 100, // Menambah token agar jawaban lebih panjang
+                temperature: 0.6,
                 do_sample: true,
+                // Menggunakan template chat khusus Gemma untuk hasil yang lebih baik
+                template: `<start_of_turn>user\n${prompt}<end_of_turn>\n<start_of_turn>model\n`
             });
 
             sendButton.disabled = false;
@@ -92,10 +93,10 @@
             
             // Ambil teks yang dihasilkan
             const generatedText = output[0].generated_text.trim();
-            // Membersihkan prompt dari output (karena text-generation mengembalikan prompt + jawaban)
-            const cleanResponse = generatedText.startsWith(prompt) 
-                                ? generatedText.substring(prompt.length).trim() 
-                                : generatedText;
+            
+            // Mencari dan mengambil hanya bagian respons model
+            const modelResponseTag = '<start_of_turn>model';
+            const cleanResponse = generatedText.substring(generatedText.lastIndexOf(modelResponseTag) + modelResponseTag.length).trim();
             
             return cleanResponse;
         }
@@ -115,13 +116,12 @@
             // 3. Tampilkan pesan AI
             addMessage('bot', botResponse);
             
-            // Opsional: Simpan ke LocalStorage untuk Desentralisasi Data Riwayat
+            // Simpan ke LocalStorage
             saveHistory();
         }
 
-        // 4. HANDLER LOCAL STORAGE (OPSIONAL)
+        // 4. HANDLER LOCAL STORAGE
         function saveHistory() {
-             // Dapatkan semua konten chat dan simpan sebagai JSON di perangkat pengguna
              localStorage.setItem('chatHistory', chatHistory.innerHTML);
         }
 
