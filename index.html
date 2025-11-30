@@ -3,37 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Decentralized - Private Chatbot</title>
+    <title>Chatbot Portofolio - Logika Murni</title>
     <link rel="stylesheet" href="styles.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.2"></script>
 </head>
 <body>
     <div class="chat-container">
         <header class="chat-header">
-            <h1>AI Decentralized 🔒</h1>
-            <p class="subtitle">Client-Side LLM: 100% On-Device Inference. Data Anda Aman.</p>
+            <h1>Chatbot Portofolio (Non-AI) 💡</h1>
+            <p class="subtitle">Logika Murni JavaScript. Dibuat untuk demonstrasi UI/UX.</p>
             <button id="clear-chat-button" title="Bersihkan Riwayat Obrolan">🗑️</button>
         </header>
 
         <div id="chat-history" class="chat-history">
             <div class="message bot-message">
-                <p>Halo! Saya adalah chatbot AI privat Anda. Semua percakapan diproses di perangkat Anda dan tidak dikirim ke server manapun.</p>
+                <p>Halo! Saya adalah *chatbot* murni JavaScript. Saya dirancang untuk menunjukkan keahlian UI/UX, bukan inferensi AI. Silakan ketik apa saja!</p>
             </div>
         </div>
 
         <div id="status-area" class="status-area">
-            <div id="progress-bar-container" class="progress-bar-container">
-                <div id="progress-bar" class="progress-bar"></div>
-            </div>
             <div id="status-message" class="status-message">
-                Memulai inisialisasi model...
+                Sistem Siap. (Tidak ada *loading* model).
             </div>
         </div>
 
         <div class="chat-input-area">
             <textarea id="user-input" placeholder="Ketik pesan Anda..." rows="1"></textarea>
-            <button id="send-button" disabled title="Kirim Pesan">
+            <button id="send-button" title="Kirim Pesan">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
         </div>
@@ -42,4 +37,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
