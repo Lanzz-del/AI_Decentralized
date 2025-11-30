@@ -6,7 +6,7 @@ const sendButton = document.getElementById('send-button');
 const statusMessage = document.getElementById('status-message');
 const clearChatButton = document.getElementById('clear-chat-button');
 
-// Daftar balasan yang sudah ditentukan untuk efek AI (dijamin cepat dan tanpa download)
+// Daftar balasan yang sudah ditentukan
 const predefinedResponses = [
     "Terima kasih atas pesan Anda! Sebagai *chatbot* portofolio, saya fokus pada *user experience* dan kebersihan kode JavaScript.",
     "Semua fungsionalitas di sini (input, output, history) diimplementasikan menggunakan Vanilla JS.",
@@ -94,7 +94,10 @@ userInput.addEventListener('input', () => {
     userInput.style.height = userInput.scrollHeight + 'px';
 });
 
+// *--- PERHATIAN: Memastikan tombol Kirim bekerja saat di-klik ---*
 sendButton.addEventListener('click', sendMessage);
+
+// *--- PERHATIAN: Memastikan tombol Kirim bekerja saat ENTER ditekan ---*
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { 
         e.preventDefault(); 
@@ -105,5 +108,5 @@ userInput.addEventListener('keypress', (e) => {
 clearChatButton.addEventListener('click', clearChatHistory);
 
 loadHistory(); 
-sendButton.disabled = false; // Tombol selalu aktif sejak awal
+sendButton.disabled = false;
 statusMessage.textContent = 'Sistem Siap. (Tidak ada *loading* model).';
