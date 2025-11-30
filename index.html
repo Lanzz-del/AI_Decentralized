@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Phi-4-mini Chatbot (Client-Side)</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.2"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Private Phi Chatbot 🔒</h1>
+        <p class="subtitle">100% On-Device Inference. Data Anda Aman.</p>
+
+        <div id="chat-history" class="chat-history">
+            <div class="message bot-message">
+                <p>Halo! Saya adalah chatbot pribadi yang berjalan di browser Anda (client-side). Tidak ada data obrolan yang dikirim ke server manapun.</p>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Ketik pesan Anda...">
+            <button id="send-button" disabled>Kirim</button>
+        </div>
+
+        <div id="status-message" class="status-message">
+            Memuat model... Tunggu sebentar.
+        </div>
+    </div>
+
+    <script>
+        // === LOGIKA JAVASCRIPT: PRIVASI & INFERENSI LOKAL ===
+
+        const modelName = 'Xenova/phi-2'; // Placeholder untuk Phi-4-mini compatible
+        let pipe = null;
+
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const statusMessage = document.getElementById('status-message');
+
+        // Fungsi untuk menambahkan pesan ke tampilan
+        function addMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll
+        }
+
+        // 1. INISIALISASI MODEL DENGAN transformers.js
+        async function initializeModel() {
+            try {
+                // Hati-hati: Pemanggilan 'pipeline' ini akan mendownload bobot model (weights)
+                // secara langsung ke browser pengguna. Ini hanya terjadi sekali.
+                statusMessage.textContent = 'Mengunduh model LLM ringan (±200MB)...';
+                pipe = await self.transformers.pipeline(
+                    'text-generation', 
+                    modelName, 
+                    { 
+                        // Konfigurasi ini memastikan model berjalan lokal
+                        revision: 'main'
+                    }
+                );
+                
+                statusMessage.textContent = 'Model siap! Chat dimulai.';
+                sendButton.disabled = false;
+                sendButton.textContent = 'Kirim';
+            } catch (error) {
+                console.error('Gagal memuat model:', error);
+                statusMessage.textContent = 'Error: Gagal memuat model. Periksa koneksi atau konsol.';
+            }
+        }
+
+        // 2. FUNGSI INFERENSI (TIDAK ADA FETCH API KE SERVER)
+        async function runInference(prompt) {
+            if (!pipe) return "Model belum siap.";
+
+            sendButton.disabled = true;
+            sendButton.textContent = 'AI Berpikir...';
+            
+            // Proses inferensi berjalan murni di perangkat pengguna!
+            const output = await pipe(prompt, {
+                max_new_tokens: 50,
+                temperature: 0.7,
+                do_sample: true,
+            });
+
+            sendButton.disabled = false;
+            sendButton.textContent = 'Kirim';
+            
+            // Ambil teks yang dihasilkan
+            const generatedText = output[0].generated_text.trim();
+            // Membersihkan prompt dari output (karena text-generation mengembalikan prompt + jawaban)
+            const cleanResponse = generatedText.startsWith(prompt) 
+                                ? generatedText.substring(prompt.length).trim() 
+                                : generatedText;
+            
+            return cleanResponse;
+        }
+
+        // 3. HANDLER PENGIRIMAN PESAN
+        async function sendMessage() {
+            const userText = userInput.value.trim();
+            if (!userText || sendButton.disabled) return;
+
+            // 1. Tampilkan pesan pengguna
+            addMessage('user', userText);
+            userInput.value = '';
+
+            // 2. Dapatkan respons dari model lokal
+            const botResponse = await runInference(userText);
+
+            // 3. Tampilkan pesan AI
+            addMessage('bot', botResponse);
+            
+            // Opsional: Simpan ke LocalStorage untuk Desentralisasi Data Riwayat
+            saveHistory();
+        }
+
+        // 4. HANDLER LOCAL STORAGE (OPSIONAL)
+        function saveHistory() {
+             // Dapatkan semua konten chat dan simpan sebagai JSON di perangkat pengguna
+             localStorage.setItem('chatHistory', chatHistory.innerHTML);
+        }
+
+        function loadHistory() {
+             const savedHistory = localStorage.getItem('chatHistory');
+             if (savedHistory) {
+                chatHistory.innerHTML = savedHistory;
+             }
+        }
+
+        // === EVENT LISTENERS & INI ===
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        loadHistory(); // Muat riwayat saat aplikasi dibuka
+        initializeModel(); // Mulai memuat model
+    </script>
+</body>
+</html>
