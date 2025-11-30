@@ -1,0 +1,119 @@
+/* GAYA DASAR */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* CONTAINER CHAT */
+.chat-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    height: 80vh; /* Tinggi yang cukup untuk tampilan */
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 1.5em;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* RIWAYAT CHAT */
+.chat-history {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    border-bottom: 1px solid #eee;
+}
+
+.message {
+    margin-bottom: 10px;
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 3px;
+}
+
+.bot-message {
+    background-color: #e9ecef;
+    color: #333;
+    margin-right: auto;
+    border-bottom-left-radius: 3px;
+}
+
+.message p {
+    margin: 0;
+}
+
+/* INPUT CHAT */
+.chat-input {
+    display: flex;
+    padding: 15px;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 1em;
+}
+
+#send-button {
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#send-button:hover:not([disabled]) {
+    background-color: #218838;
+}
+
+#send-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* STATUS */
+.status-message {
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85em;
+    color: #dc3545;
+    background-color: #fff3cd;
+    border-top: 1px solid #ffeeba;
+}
