@@ -17,7 +17,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     width: 100%;
-    max-width: 700px; /* Slightly wider */
+    max-width: 700px;
     display: flex;
     flex-direction: column;
     height: 90vh; 
@@ -31,7 +31,7 @@ body {
     align-items: center;
     padding: 15px 20px;
     border-bottom: 1px solid #0f3460;
-    background-color: #0f3460; /* Header background */
+    background-color: #0f3460;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
@@ -42,11 +42,6 @@ h1 {
     font-size: 1.8em;
     display: flex;
     align-items: center;
-}
-
-h1 .fa-lock {
-    margin-left: 10px;
-    color: #f7a400; /* Gold lock icon */
 }
 
 .subtitle {
@@ -75,8 +70,8 @@ h1 .fa-lock {
     flex-grow: 1;
     padding: 20px;
     overflow-y: auto;
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: #0f3460 #16213e; /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #0f3460 #16213e; 
 }
 
 /* Custom scrollbar for Webkit browsers */
@@ -106,14 +101,14 @@ h1 .fa-lock {
 }
 
 .user-message {
-    background-color: #007bff; /* Blue */
+    background-color: #007bff;
     color: white;
     margin-left: auto;
     border-bottom-right-radius: 5px;
 }
 
 .bot-message {
-    background-color: #3f51b5; /* Deeper blue */
+    background-color: #3f51b5;
     color: white;
     margin-right: auto;
     border-bottom-left-radius: 5px;
@@ -130,32 +125,7 @@ h1 .fa-lock {
     background-color: #1a1a2e;
     text-align: center;
     font-size: 0.9em;
-    color: #f7a400; /* Amber for status */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.status-message {
-    margin: 0;
-}
-
-.progress-bar-container {
-    width: 90%;
-    background-color: #333;
-    border-radius: 5px;
-    height: 8px;
-    overflow: hidden;
-    margin-top: 5px;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background-color: #4caf50; /* Green progress */
-    border-radius: 5px;
-    transition: width 0.3s ease-in-out;
+    color: #f7a400;
 }
 
 /* INPUT CHAT */
@@ -175,9 +145,9 @@ h1 .fa-lock {
     font-size: 1em;
     background-color: #16213e;
     color: #e0e0e0;
-    resize: none; /* Disable manual resize */
-    min-height: 40px; /* Adjust as needed */
-    max-height: 120px; /* Limit expansion */
+    resize: none;
+    min-height: 40px;
+    max-height: 120px;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
@@ -197,13 +167,13 @@ h1 .fa-lock {
     background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 50%; /* Make it round */
+    border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
 }
 
 #send-button svg {
